@@ -34,7 +34,8 @@ func createTables() { //creates the links table with IF NOT EXISTS so it's safe 
 		short         TEXT NOT NULL UNIQUE,
 		clicks        INTEGER DEFAULT 0,
 		created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
-		last_accessed DATETIME
+		last_accessed DATETIME,
+		expires_at    DATETIME
 	);`
 
 	_, err := DB.Exec(query)
@@ -42,8 +43,8 @@ func createTables() { //creates the links table with IF NOT EXISTS so it's safe 
 		log.Fatal("Failed to create tables:", err)
 	}
 
-	// Add last_accessed column if it doesn't exist yet (for existing databases)
 	DB.Exec("ALTER TABLE links ADD COLUMN last_accessed DATETIME")
+	DB.Exec("ALTER TABLE links ADD COLUMN expires_at DATETIME")
 
 	fmt.Println("Tables ready!")
 }

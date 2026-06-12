@@ -6,5 +6,7 @@ type Link struct {
 	Short        string  `json:"short"`
 	Clicks       int     `json:"clicks"`
 	CreatedAt    string  `json:"created_at"`
-	LastAccessed *string `json:"last_accessed"` // pointer so it can be null
+	LastAccessed *string `json:"last_accessed"`
+	ExpiresAt    *string `json:"expires_at"`
+	Status       string  `json:"status"` // "active" or "expired"
 }
