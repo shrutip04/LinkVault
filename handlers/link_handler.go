@@ -79,7 +79,7 @@ func ShortenURL(c *gin.Context) {
 		userID, input.Original, shortCode, expiresAt, hashedPassword, category,
 	)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save link"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

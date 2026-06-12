@@ -37,16 +37,18 @@ func createTables() { //creates the links table with IF NOT EXISTS so it's safe 
 	);`
 
 	linksTable := `
-	CREATE TABLE IF NOT EXISTS links (
-		id            INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id       INTEGER NOT NULL,
-		original      TEXT NOT NULL,
-		short         TEXT NOT NULL UNIQUE,
-		clicks        INTEGER DEFAULT 0,
-		created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
-		last_accessed DATETIME,
-		expires_at    DATETIME,
-		FOREIGN KEY (user_id) REFERENCES users(id)
+CREATE TABLE IF NOT EXISTS links (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER NOT NULL,
+    original      TEXT NOT NULL,
+    short         TEXT NOT NULL UNIQUE,
+    clicks        INTEGER DEFAULT 0,
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_accessed DATETIME,
+    expires_at    DATETIME,
+    password      TEXT,
+    category      TEXT DEFAULT 'General',
+    FOREIGN KEY (user_id) REFERENCES users(id)
 	);`
 
 	_, err := DB.Exec(usersTable)
@@ -58,11 +60,12 @@ func createTables() { //creates the links table with IF NOT EXISTS so it's safe 
 	if err != nil {
 		log.Fatal("Failed to create links table:", err)
 	}
-
-	// Migration for existing links table
+	// Migrations for existing databases
 	DB.Exec("ALTER TABLE links ADD COLUMN last_accessed DATETIME")
 	DB.Exec("ALTER TABLE links ADD COLUMN expires_at DATETIME")
 	DB.Exec("ALTER TABLE links ADD COLUMN user_id INTEGER")
+	DB.Exec("ALTER TABLE links ADD COLUMN password TEXT")
+	DB.Exec("ALTER TABLE links ADD COLUMN category TEXT DEFAULT 'General'")
 
 	fmt.Println("Tables ready!")
 }
