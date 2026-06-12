@@ -4,18 +4,17 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shrutip04/linkvault/database"
+	"github.com/shrutip04/linkvault/routes"
 )
 
 func main() {
 	fmt.Println("LinkVault starting...")
 
-	r := gin.Default()
+	database.InitDB()
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	r := gin.Default()
+	routes.SetupRoutes(r)
 
 	r.Run(":8080")
 }
