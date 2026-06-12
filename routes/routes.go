@@ -8,5 +8,6 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	r.POST("/shorten", handlers.ShortenURL)
 	r.GET("/links", handlers.GetAllLinks)
+	r.GET("/links/stats", handlers.GetStats)
 	r.GET("/:code", handlers.RedirectURL)
 }

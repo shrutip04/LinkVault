@@ -29,17 +29,21 @@ func InitDB() { //opens the SQLite file (creates it if it doesn't exist)
 func createTables() { //creates the links table with IF NOT EXISTS so it's safe to run every startup
 	query := `
 	CREATE TABLE IF NOT EXISTS links (
-		id        INTEGER PRIMARY KEY AUTOINCREMENT,
-		original  TEXT NOT NULL,
-		short     TEXT NOT NULL UNIQUE,
-		clicks    INTEGER DEFAULT 0,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		id            INTEGER PRIMARY KEY AUTOINCREMENT,
+		original      TEXT NOT NULL,
+		short         TEXT NOT NULL UNIQUE,
+		clicks        INTEGER DEFAULT 0,
+		created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+		last_accessed DATETIME
 	);`
 
 	_, err := DB.Exec(query)
 	if err != nil {
 		log.Fatal("Failed to create tables:", err)
 	}
+
+	// Add last_accessed column if it doesn't exist yet (for existing databases)
+	DB.Exec("ALTER TABLE links ADD COLUMN last_accessed DATETIME")
 
 	fmt.Println("Tables ready!")
 }
