@@ -11,12 +11,14 @@ import (
 	qrcode "github.com/skip2/go-qrcode"
 )
 
-// POST /shorten
+// POST /shorten  (protected)
 func ShortenURL(c *gin.Context) {
+	userID := c.GetInt("user_id")
+
 	var input struct {
-		Original  string `json:"original" binding:"required"`
+		Original  string `json:"original"   binding:"required"`
 		Alias     string `json:"alias"`
-		ExpiresIn string `json:"expires_in"` // "1h", "24h", "7d", "30d"
+		ExpiresIn string `json:"expires_in"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -29,7 +31,6 @@ func ShortenURL(c *gin.Context) {
 		shortCode = utils.GenerateShortCode(6)
 	}
 
-	// Check if alias already exists
 	var existing string
 	err := database.DB.QueryRow(
 		"SELECT short FROM links WHERE short = ?", shortCode,
@@ -39,22 +40,19 @@ func ShortenURL(c *gin.Context) {
 		return
 	}
 
-	// Handle expiry
 	var expiresAt *string
 	if input.ExpiresIn != "" {
 		expiry, valid := utils.FormatExpiry(input.ExpiresIn)
 		if !valid {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid expires_in. Use: 1h, 24h, 7d, 30d",
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid expires_in. Use: 1h, 24h, 7d, 30d"})
 			return
 		}
 		expiresAt = &expiry
 	}
 
 	_, err = database.DB.Exec(
-		"INSERT INTO links (original, short, expires_at) VALUES (?, ?, ?)",
-		input.Original, shortCode, expiresAt,
+		"INSERT INTO links (user_id, original, short, expires_at) VALUES (?, ?, ?, ?)",
+		userID, input.Original, shortCode, expiresAt,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save link"})
@@ -72,7 +70,7 @@ func ShortenURL(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// GET /:code → redirect (with expiry check)
+// GET /:code → public redirect
 func RedirectURL(c *gin.Context) {
 	code := c.Param("code")
 
@@ -86,7 +84,6 @@ func RedirectURL(c *gin.Context) {
 		return
 	}
 
-	// Check expiry before redirecting
 	if utils.IsExpired(link.ExpiresAt) {
 		c.JSON(http.StatusGone, gin.H{"error": "This link has expired"})
 		return
@@ -101,10 +98,13 @@ func RedirectURL(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, link.Original)
 }
 
-// GET /links → all links with status
+// GET /links → user's own links only (protected)
 func GetAllLinks(c *gin.Context) {
+	userID := c.GetInt("user_id")
+
 	rows, err := database.DB.Query(
-		"SELECT id, original, short, clicks, created_at, last_accessed, expires_at FROM links ORDER BY created_at DESC",
+		`SELECT id, original, short, clicks, created_at, last_accessed, expires_at
+		 FROM links WHERE user_id = ? ORDER BY created_at DESC`, userID,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch links"})
@@ -133,21 +133,28 @@ func GetAllLinks(c *gin.Context) {
 	c.JSON(http.StatusOK, links)
 }
 
-// GET /links/stats
+// GET /links/stats → user's personal dashboard stats (protected)
 func GetStats(c *gin.Context) {
-	var totalLinks, totalClicks int
+	userID := c.GetInt("user_id")
+	username, _ := c.Get("username")
 
-	database.DB.QueryRow("SELECT COUNT(*) FROM links").Scan(&totalLinks)
-	database.DB.QueryRow("SELECT COALESCE(SUM(clicks), 0) FROM links").Scan(&totalClicks)
+	var totalLinks, totalClicks int
+	database.DB.QueryRow(
+		"SELECT COUNT(*) FROM links WHERE user_id = ?", userID,
+	).Scan(&totalLinks)
+	database.DB.QueryRow(
+		"SELECT COALESCE(SUM(clicks), 0) FROM links WHERE user_id = ?", userID,
+	).Scan(&totalClicks)
 
 	var popularShort string
 	var popularClicks int
 	database.DB.QueryRow(
-		"SELECT short, clicks FROM links ORDER BY clicks DESC LIMIT 1",
+		"SELECT short, clicks FROM links WHERE user_id = ? ORDER BY clicks DESC LIMIT 1", userID,
 	).Scan(&popularShort, &popularClicks)
 
-	// Count expired vs active by checking expires_at in Go
-	rows, _ := database.DB.Query("SELECT expires_at FROM links")
+	rows, _ := database.DB.Query(
+		"SELECT expires_at FROM links WHERE user_id = ?", userID,
+	)
 	defer rows.Close()
 
 	activeLinks, expiredLinks := 0, 0
@@ -162,6 +169,7 @@ func GetStats(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"username":      username,
 		"total_links":   totalLinks,
 		"total_clicks":  totalClicks,
 		"active_links":  activeLinks,
@@ -173,30 +181,25 @@ func GetStats(c *gin.Context) {
 	})
 }
 
-// GET /qr/:code → returns QR code as PNG image
+// GET /qr/:code → public QR code
 func GenerateQR(c *gin.Context) {
 	code := c.Param("code")
 
-	// Check link exists
 	var original string
 	err := database.DB.QueryRow(
 		"SELECT original FROM links WHERE short = ?", code,
 	).Scan(&original)
-
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Link not found"})
 		return
 	}
 
 	shortURL := "http://localhost:8080/" + code
-
-	// Generate QR code as PNG bytes (256x256 pixels)
 	png, err := qrcode.Encode(shortURL, qrcode.Medium, 256)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate QR code"})
 		return
 	}
 
-	// Send as image
 	c.Data(http.StatusOK, "image/png", png)
 }

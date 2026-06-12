@@ -27,24 +27,42 @@ func InitDB() { //opens the SQLite file (creates it if it doesn't exist)
 }
 
 func createTables() { //creates the links table with IF NOT EXISTS so it's safe to run every startup
-	query := `
+	usersTable := `
+	CREATE TABLE IF NOT EXISTS users (
+		id         INTEGER PRIMARY KEY AUTOINCREMENT,
+		username   TEXT NOT NULL UNIQUE,
+		email      TEXT NOT NULL UNIQUE,
+		password   TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	linksTable := `
 	CREATE TABLE IF NOT EXISTS links (
 		id            INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id       INTEGER NOT NULL,
 		original      TEXT NOT NULL,
 		short         TEXT NOT NULL UNIQUE,
 		clicks        INTEGER DEFAULT 0,
 		created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
 		last_accessed DATETIME,
-		expires_at    DATETIME
+		expires_at    DATETIME,
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);`
 
-	_, err := DB.Exec(query)
+	_, err := DB.Exec(usersTable)
 	if err != nil {
-		log.Fatal("Failed to create tables:", err)
+		log.Fatal("Failed to create users table:", err)
 	}
 
+	_, err = DB.Exec(linksTable)
+	if err != nil {
+		log.Fatal("Failed to create links table:", err)
+	}
+
+	// Migration for existing links table
 	DB.Exec("ALTER TABLE links ADD COLUMN last_accessed DATETIME")
 	DB.Exec("ALTER TABLE links ADD COLUMN expires_at DATETIME")
+	DB.Exec("ALTER TABLE links ADD COLUMN user_id INTEGER")
 
 	fmt.Println("Tables ready!")
 }
