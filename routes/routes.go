@@ -7,18 +7,20 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	// Public routes
+	// Public
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
 	r.GET("/qr/:code", handlers.GenerateQR)
 	r.GET("/:code", handlers.RedirectURL)
 
-	// Protected routes (JWT required)
+	// Protected
 	auth := r.Group("/")
 	auth.Use(middleware.AuthRequired())
 	{
 		auth.POST("/shorten", handlers.ShortenURL)
 		auth.GET("/links", handlers.GetAllLinks)
 		auth.GET("/links/stats", handlers.GetStats)
+		auth.DELETE("/links/:id", handlers.DeleteLink)
+		auth.PUT("/links/:id", handlers.EditLink)
 	}
 }
