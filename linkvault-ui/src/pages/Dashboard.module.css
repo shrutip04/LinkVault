@@ -1,0 +1,130 @@
+.container { max-width: 1200px; margin: 32px auto; padding: 0 24px; }
+
+.loading { text-align: center; padding: 80px; color: #64748b; font-size: 1.1rem; }
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.statLabel { color: #64748b; font-size: 0.85rem; margin-bottom: 8px; }
+
+.statValue { font-size: 2rem; font-weight: 700; }
+
+.green { color: #22c55e; }
+.red { color: #ef4444; }
+
+.bottomGrid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+
+.tableSection {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tableHeader h3 { font-size: 1.1rem; }
+
+.filterSelect {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.tableWrapper { overflow-x: auto; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+.table th {
+  text-align: left;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table td { padding: 14px 12px; border-bottom: 1px solid #1e293b; vertical-align: middle; }
+
+.table tr:hover td { background: #0f172a22; }
+
+.shortCode { color: #6366f1; font-weight: 600; font-family: monospace; }
+
+.originalUrl { color: #94a3b8; font-size: 0.85rem; }
+.originalUrl:hover { color: #e2e8f0; }
+
+.clicks { font-weight: 600; color: #f59e0b; }
+
+.category {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.active { color: #22c55e; font-size: 0.85rem; }
+.expired { color: #ef4444; font-size: 0.85rem; }
+
+.actions { display: flex; gap: 6px; }
+
+.copyBtn, .qrBtn, .deleteBtn {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 5px 9px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  text-decoration: none;
+}
+
+.copyBtn:hover, .qrBtn:hover { border-color: #6366f1; }
+.deleteBtn:hover { border-color: #ef4444; }
+
+.empty { color: #475569; text-align: center; padding: 40px; }
+
+.chartSection {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chartSection h3 { font-size: 1.1rem; margin-bottom: 20px; }
+
+.popularCard {
+  margin-top: 20px;
+  background: #0f172a;
+  border: 1px solid #6366f144;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.popularLabel { color: #64748b; font-size: 0.8rem; margin-bottom: 6px; }
+.popularShort { color: #6366f1; font-size: 1.3rem; font-weight: 700; font-family: monospace; }
+.popularClicks { color: #94a3b8; font-size: 0.85rem; margin-top: 4px; }

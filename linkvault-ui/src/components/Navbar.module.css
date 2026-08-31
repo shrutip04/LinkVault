@@ -1,0 +1,46 @@
+.nav {
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.right { display: flex; align-items: center; gap: 16px; }
+
+.user { color: #94a3b8; font-size: 0.9rem; }
+
+.createBtn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.createBtn:hover { background: #4f46e5; }
+
+.logoutBtn {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.logoutBtn:hover { color: #e2e8f0; border-color: #64748b; }

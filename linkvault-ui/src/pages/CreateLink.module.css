@@ -1,0 +1,83 @@
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 36px;
+}
+
+.title { font-size: 1.4rem; font-weight: 700; margin-bottom: 28px; }
+
+.form { display: flex; flex-direction: column; gap: 20px; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+
+.field label { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+
+.input {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input:focus { border-color: #6366f1; }
+
+.btn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover { background: #4f46e5; }
+.btn:disabled { background: #475569; cursor: not-allowed; }
+
+.result {
+  margin-top: 28px;
+  padding: 24px;
+  background: #0f172a;
+  border: 1px solid #22c55e44;
+  border-radius: 12px;
+}
+
+.resultLabel { color: #22c55e; font-size: 0.85rem; margin-bottom: 8px; }
+
+.shortUrl {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 16px;
+  word-break: break-all;
+}
+
+.resultActions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.copyBtn, .qrBtn, .dashBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.copyBtn { background: #334155; color: #e2e8f0; }
+.qrBtn { background: #334155; color: #e2e8f0; text-decoration: none; display: inline-block; }
+.dashBtn { background: #6366f1; color: white; }
